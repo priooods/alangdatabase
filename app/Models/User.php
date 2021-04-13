@@ -13,19 +13,22 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'username',
-        'email',
+        'name',
         'password',
         'avatar',
-        'pekerjaan',
-        'pendidikan',
+        'log',
         'fullname',
-        'access',
+        'access_id',
         'gender',
-        'alamat',
-        'status',
-        'password_verif'
+        'password_verif',
     ];
+
+    public function access(){
+        return $this->belongsTo(usersacces::class, 'access_id', 'id');
+    }
+    public function detail(){
+        return $this->belongsTo(usersdetail::class, 'id', 'user_id');
+    }
 
     public function getJWTIdentifier()
     {

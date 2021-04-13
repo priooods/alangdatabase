@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\usersacces;
+use App\Models\usersdepartemen;
+use App\Models\usersdetail;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,20 +20,16 @@ class AuthController extends Controller
 
     public function Register(Request $request){
         if($validate = $this->validasi($request->all(),[
-            'username' => 'required',
+            'name' => 'required',
             'fullname' => 'required',
-            'alamat' => 'required',
-            'access' => 'required|in:SuperUser,Admin,Sekertaris,Bendahara,Ketua,Design,Kurikulum,Hrd,Anggota',
             'gender' => 'required|in:Pria,Wanita',
-            'email' => 'required',
             'password' => 'required'
         ]))
             return $validate;
 
-        try{
             $request['password_verif'] = Crypt::encrypt($request['password']);
             $request['password'] = Hash::make($request['password']);
-            $request['status'] = 0;
+            $request['log'] = 0;
             $user = User::create($request->toArray());
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
@@ -38,31 +37,26 @@ class AuthController extends Controller
                 $path = $file->move(public_path('images'), $filename);
                 $user->update(['avatar' => $filename]);
             }
-            return $this->resSuccess($user);
-        } catch(Exception $e){
-            return $this->resFailure(1, "Failure Creted New Users, Please check your access internet");
-        }
+            return $this->resUsers($user);
     }
 
     public function Login(Request $request){
         if($validate = $this->validasi($request->all(),[
-            'username' => 'required',
+            'name' => 'required',
             'password' => 'required'
         ]))
             return $validate;
 
-        if (! $token = Auth::attempt($request->toArray())) {
+        $credential = request(['name', 'password']);
+        if (!$token = Auth::attempt($credential)) {
             return response()->json([
                 'error_code' => 1,
-                'error_message' => 'Users not found ! Please check again your account information'
+                'error_message' => 'Akun kamu tidak ditemukan, pastikan kamu memasukan informasi dengan benar.'
             ]);
         }
 
-        $user = User::where('username', $request->username)->first();
-        if ($user->status) {
-            $this->resFailed(1,"You must logout in anoter device first!");
-        }
-        $user->status = 1;
+        $user = User::where('name', $request->name)->first();
+        $user->log = 1;
         $user->update();
         return response()->json([
                 'error_code' => 0,
@@ -72,20 +66,19 @@ class AuthController extends Controller
     }
 
     public function me(){
-        $db = Auth::user();
-        $user = User::where('username', $db->username)->first();
-        $user->password_verif = Crypt::decrypt($user->password_verif);
-        return $this->resSuccess($user);
+        $user = Auth::user();
+        $user->access;
+        $user->departemen = usersdepartemen::find($user->detail->departemen_id);
+        $user->detail;
+        return $this->resUsers($user);
     }
 
     public function Updated(Request $request){
         if ($validate = $this->validing($request->all(),[
-            'username' => 'required',
+            'name' => 'required',
             'password' => 'required',
             'fullname' => 'required',
-            'access' => 'required',
-            'email' => 'required',
-            'alamat' => 'required',
+            'access_id' => 'required',
         ]))
             return $validate;
 
@@ -105,10 +98,9 @@ class AuthController extends Controller
         if (!is_null($request->password)) $user->password_verified = Crypt::encrypt($request->password);
         if (!is_null($request->fullname)) $user->fullname = $request->fullname;
         if (!is_null($request->password)) $user->password = Hash::make($request->password);
-        if (!is_null($request->username)) $user->username = $request->username;
-        if (!is_null($request->access)) $user->access = $request->access;
+        if (!is_null($request->name)) $user->name = $request->name;
+        if (!is_null($request->access_id)) $user->access_id = $request->access_id;
         if (!is_null($request->gender)) $user->gender = $request->gender;
-        if (!is_null($request->email)) $user->email = $request->email;
         if (!is_null($request->alamat)) $user->alamat = $request->alamat;
         $user->update();
         return $this->resSuccess($user);
@@ -116,13 +108,21 @@ class AuthController extends Controller
 
     public function Logout(){
         $us = Auth::user();
-        $user = User::where('username', $us->username)->first();
-        $user->update(['status' => 0]);
+        $user = User::where('id', $us->id)->first();
+        $user->update(['log' => 0]);
         Auth::logout();
-        return $this->resSuccess("Your account successfuly logout ! Happy nice day");
+        return $this->resSuccess("Kamu berhasil keluar dari applikasi ! Happy nice day");
     }
 
     public function findall(){
-        return $this->resSuccess(User::all());
+        $user = User::all();
+        foreach($user as $us){
+            $us->password_verif = Crypt::decrypt($us->password_verif);
+            $us->access;
+            $us->departemen = usersdepartemen::find($us->detail->departemen_id);
+            $us->detail;
+        }
+        return $this->resSuccess($user);
     }
+
 }
