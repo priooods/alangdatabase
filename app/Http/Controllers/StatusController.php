@@ -10,7 +10,6 @@ class StatusController extends Controller
 {
     public function AddStatus(Request $request){
         if($validate = $this->validasi($request->all(),[
-            'token' => 'required',
             'user_id' => 'required',
             'motto' => 'required',
             'alamat' => 'required',

@@ -68,7 +68,9 @@ class AuthController extends Controller
     public function me(){
         $user = Auth::user();
         $user->access;
-        $user->departemen = usersdepartemen::find($user->detail->departemen_id);
+        if($user->detail != null){
+            $user->departemen = usersdepartemen::find($user->detail->departemen_id);
+        }
         $user->detail;
         return $this->resUsers($user);
     }
@@ -119,7 +121,9 @@ class AuthController extends Controller
         foreach($user as $us){
             $us->password_verif = Crypt::decrypt($us->password_verif);
             $us->access;
-            $us->departemen = usersdepartemen::find($us->detail->departemen_id);
+            if($us->detail != null){
+                $us->departemen = usersdepartemen::find($us->detail->departemen_id);
+            }
             $us->detail;
         }
         return $this->resSuccess($user);

@@ -17,4 +17,8 @@ class DepartemenController extends Controller
         $user = usersdepartemen::create($request->toArray());
         return $this->resSuccess($user);
     }
+
+    public function AllDepart(){
+        return $this->resSuccess(usersdepartemen::all());
+    }
 }

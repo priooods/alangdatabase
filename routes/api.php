@@ -24,5 +24,6 @@ Route::group([
     Route::post('user/detail/add', [StatusController::class,'AddStatus']);
     Route::post('user/detail/update', [StatusController::class,'UpdateStatus']);
 
+    Route::post('departemen/all', [DepartemenController::class,'AllDepart']);
     Route::post('departemen/add', [DepartemenController::class,'AddDepart']);
 });
