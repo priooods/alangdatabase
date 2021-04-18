@@ -10,12 +10,13 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth:api', ['except' => ['Login','Register','findall']]);
+        $this->middleware('auth:api', ['except' => ['Login','Register','findallUser','Updated','findallTamu']]);
     }
 
     public function Register(Request $request){
@@ -68,23 +69,26 @@ class AuthController extends Controller
     public function me(){
         $user = Auth::user();
         $user->access;
-        if($user->detail != null){
-            $user->departemen = usersdepartemen::find($user->detail->departemen_id);
+        if($user->type == 'Tamu'){
+            if($user->detailtamu != null){
+                $user->detailtamu;
+            }
+        } else {
+            if($user->detail != null){
+                $user->departemen = usersdepartemen::find($user->detail->departemen_id);
+            }
+            $user->detail;
         }
-        $user->detail;
         return $this->resUsers($user);
     }
 
     public function Updated(Request $request){
-        if ($validate = $this->validing($request->all(),[
-            'name' => 'required',
-            'password' => 'required',
-            'fullname' => 'required',
-            'access_id' => 'required',
+        if ($validate = $this->validasi($request->all(),[
+            'id' => 'required',
         ]))
             return $validate;
 
-        $user = User::find(Auth::user()->id);
+        $user = User::where('id',$request->id)->first();
         if ($request->avatar != null){
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
@@ -101,11 +105,12 @@ class AuthController extends Controller
         if (!is_null($request->fullname)) $user->fullname = $request->fullname;
         if (!is_null($request->password)) $user->password = Hash::make($request->password);
         if (!is_null($request->name)) $user->name = $request->name;
+        if (!is_null($request->type)) $user->type = $request->type;
         if (!is_null($request->access_id)) $user->access_id = $request->access_id;
         if (!is_null($request->gender)) $user->gender = $request->gender;
         if (!is_null($request->alamat)) $user->alamat = $request->alamat;
         $user->update();
-        return $this->resSuccess($user);
+        return $this->resUsers($user);
     }
 
     public function Logout(){
@@ -116,15 +121,21 @@ class AuthController extends Controller
         return $this->resSuccess("Kamu berhasil keluar dari applikasi ! Happy nice day");
     }
 
-    public function findall(){
-        $user = User::all();
-        foreach($user as $us){
-            $us->password_verif = Crypt::decrypt($us->password_verif);
-            $us->access;
-            if($us->detail != null){
-                $us->departemen = usersdepartemen::find($us->detail->departemen_id);
+    public function findallUser(){
+        $user = User::where('type', 'Pengguna')->with(['access','detail' => function($q){
+                $q->with('department');
             }
-            $us->detail;
+        ])->get();
+        foreach($user as $us){
+            $us->password_verif = Crypt::decrypt($us->password_verif); 
+        }
+        return $this->resSuccess($user);
+    }
+
+    public function findallTamu(){
+        $user = User::where('type', 'Tamu')->with(['access','detailtamu'])->get();
+        foreach($user as $us){
+            $us->password_verif = Crypt::decrypt($us->password_verif); 
         }
         return $this->resSuccess($user);
     }

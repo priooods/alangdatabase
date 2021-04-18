@@ -20,6 +20,7 @@ class User extends Authenticatable implements JWTSubject
         'fullname',
         'access_id',
         'gender',
+        'type',
         'password_verif',
     ];
 
@@ -28,6 +29,14 @@ class User extends Authenticatable implements JWTSubject
     }
     public function detail(){
         return $this->belongsTo(usersdetail::class, 'id', 'user_id');
+    }
+
+    public function department(){
+        return $this->belongsToMany(usersdetail::class);
+    }
+    
+    public function detailtamu(){
+        return $this->belongsTo(TamuDetail::class, 'id', 'user_id');
     }
 
     public function getJWTIdentifier()

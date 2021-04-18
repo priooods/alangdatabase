@@ -15,7 +15,7 @@ class CreateUsersaccesTable extends Migration
     {
         Schema::create('usersacces', function (Blueprint $table) {
             $table->id();
-            $table->string('access');
+            $table->string('access')->unique();
         });
     }
 

@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersdetailsTable extends Migration
+class CreateProkerCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,31 +14,20 @@ class CreateUsersdetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('usersdetails', function (Blueprint $table) {
+        Schema::create('proker_comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('departemen_id')->nullable();
-            $table->string('alamat');
-            $table->string('motto');
-            $table->string('pekerjaan')->nullable();
-            $table->string('pendidikan')->nullable();
-            $table->integer('contact')->nullable();
-            $table->string('sosmed')->nullable();
+            $table->string('komentar');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
 
-        Schema::table('usersdetails', function (Blueprint $table) {
+        Schema::table('proker_comments', function (Blueprint $table) {
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onUpdate('cascade')
-                ->onDelete('cascade'); 
-            $table->foreign('departemen_id')
-                ->references('id')
-                ->on('usersdepartemens')
-                ->onUpdate('cascade')
-                ->onDelete('SET NULL');
+                ->onDelete('cascade');
         });
     }
 
@@ -49,6 +38,6 @@ class CreateUsersdetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('usersdetails');
+        Schema::dropIfExists('proker_comments');
     }
 }

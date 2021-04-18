@@ -20,4 +20,8 @@ class usersdetail extends Model
         'departemen_id'
     ];
 
+    public function department(){
+        return $this->hasOne(usersdepartemen::class,'id','departemen_id');
+    }
+
 }

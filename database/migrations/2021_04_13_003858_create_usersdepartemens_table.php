@@ -15,7 +15,7 @@ class CreateUsersdepartemensTable extends Migration
     {
         Schema::create('usersdepartemens', function (Blueprint $table) {
             $table->id();
-            $table->string('departemen');
+            $table->string('departemen')->unique();
         });
     }
 
