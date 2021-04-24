@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proker;
+use App\Models\ProkerComment;
 use Illuminate\Http\Request;
 
 class ProkerController extends Controller
@@ -38,7 +39,8 @@ class ProkerController extends Controller
     }
 
     public function showProker(){
-        return $this->resSuccess(Proker::all());
+        $proker = Proker::with('department')->get();
+        return $this->resSuccess($proker);
     }
 
     public function updateProker(Request $request){
@@ -71,5 +73,22 @@ class ProkerController extends Controller
         $proker = Proker::find($request->id);
         $proker->delete();
         return $this->resFailure(0,"Proker Berhasil Di Hapus");
+    }
+
+    public function ProkerKoment(Request $request){
+        if($validate = $this->validasi($request->all(),[
+            'komentar'=> 'required',
+            'user_id'=> 'required',
+        ]))
+            return $validate;
+        
+        $koment = ProkerComment::create($request->toArray());
+        $koment->userName;
+        return $this->resSuccess($koment);
+    }
+
+    public function KomentarAll(){
+        $koment = ProkerComment::with(['userName','prokerdetail'])->get();
+        return $this->resSuccess($koment);
     }
 }

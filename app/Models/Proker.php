@@ -19,4 +19,7 @@ class Proker extends Model
         'tgl_selesai',
         'lokasi'
     ];
+    public function department(){
+        return $this->belongsTo(usersdepartemen::class, 'department_id', 'id');
+    }
 }

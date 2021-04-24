@@ -33,4 +33,6 @@ Route::group([
     Route::get('proker/all', [ProkerController::class,'showProker']);
     Route::post('proker/update', [ProkerController::class,'updateProker']);
     Route::post('proker/delete', [ProkerController::class,'DeleteProker']);
+    Route::post('proker/koment/add', [ProkerController::class,'ProkerKoment']);
+    Route::get('proker/koment/all', [ProkerController::class,'KomentarAll']);
 });
