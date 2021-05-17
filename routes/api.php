@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProkerController;
 use App\Http\Controllers\StatusController;
 use Illuminate\Support\Facades\Route;
@@ -35,4 +36,9 @@ Route::group([
     Route::post('proker/delete', [ProkerController::class,'DeleteProker']);
     Route::post('proker/koment/add', [ProkerController::class,'ProkerKoment']);
     Route::get('proker/koment/all', [ProkerController::class,'KomentarAll']);
+
+    Route::post('news/add', [NewsController::class,'AddNews']);
+    Route::post('news/delete', [NewsController::class,'deleteNews']);
+    Route::post('news/update', [NewsController::class,'UpdatedNews']);
+    Route::get('news/all', [NewsController::class,'AllNews']);
 });

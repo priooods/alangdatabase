@@ -27,6 +27,6 @@ class AccessController extends Controller
     public function deleteAccess(Request $request){
         $cari = usersacces::where('id', $request->id)->first();
         $cari->delete();
-        return $this->resFailure(0,"Access Berhasil Dihapus");
+        return $this->resSuccess("Access Berhasil Dihapus");
     }
 }
