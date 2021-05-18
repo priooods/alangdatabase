@@ -9,20 +9,19 @@ class NewsController extends Controller
 {
     public function AddNews(Request $request){
         if($validate = $this->validasi($request->all(),[
-            'image' => 'required',
             'content' => 'required',
             'judul' => 'required'
         ]))
         return $validate;
 
-        $user = News::create($request->toArray());
+        $news = News::create($request->toArray());
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = $user->id . '_' . $file->getClientOriginalName();
+            $filename = $news->id . '_' . $file->getClientOriginalName();
             $path = $file->move(public_path('images/news'), $filename);
-            $user->update(['image' => $filename]);
+            $news->update(['image' => $filename]);
         }
-        return $this->resUsers($user);
+        return $this->resSuccess($news);
     }
 
     public function deleteNews(Request $request){

@@ -35,7 +35,7 @@ class AuthController extends Controller
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
                 $filename = $user->id . '_' . $file->getClientOriginalName();
-                $path = $file->move(public_path('images'), $filename);
+                $path = $file->move(public_path('images/user'), $filename);
                 $user->update(['avatar' => $filename]);
             }
             return $this->resUsers($user);
@@ -94,10 +94,10 @@ class AuthController extends Controller
                 $file = $request->file('avatar');
                 $filename = $user->id . '_' . $file->getClientOriginalName();
                 if ($user->avatar) {
-                    $file_loc = public_path('images/') . $user->avatar;
+                    $file_loc = public_path('images/user/') . $user->avatar;
                     unlink($file_loc);
                 }
-                $path = $file->move(public_path('images'), $filename);
+                $path = $file->move(public_path('images/user'), $filename);
                 $user->avatar = $request->avatar = $filename;
             }
         }
