@@ -22,4 +22,10 @@ class Proker extends Model
     public function department(){
         return $this->belongsTo(usersdepartemen::class, 'department_id', 'id');
     }
+    public function komentar(){
+        return $this->hasMany(ProkerComment::class, 'proker_id', 'id');
+    }
+    public function userName(){
+        return $this->belongsToMany(User::class);
+    }
 }

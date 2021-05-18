@@ -39,7 +39,7 @@ class ProkerController extends Controller
     }
 
     public function showProker(){
-        $proker = Proker::with('department')->get();
+        $proker = Proker::with(['department','komentar' => function($data){$data->with('userName');}])->get();
         return $this->resSuccess($proker);
     }
 
